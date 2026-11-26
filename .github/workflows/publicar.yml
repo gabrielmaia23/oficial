@@ -1,0 +1,30 @@
+name: Publicar no Instagram
+
+on:
+  workflow_dispatch:
+    inputs:
+      imagem:
+        description: "Nome do arquivo em images/"
+        required: true
+        default: "post-simply-invest.jpg"
+      legenda:
+        description: "Arquivo de legenda"
+        required: true
+        default: "legenda.txt"
+
+jobs:
+  publicar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -r requirements.txt
+      - name: Publicar
+        env:
+          IG_TOKEN: ${{ secrets.IG_TOKEN }}
+          IG_USER_ID: ${{ secrets.IG_USER_ID }}
+        run: |
+          URL="https://raw.githubusercontent.com/${{ github.repository }}/${{ github.ref_name }}/images/${{ inputs.imagem }}"
+          python publicar.py "$URL" "${{ inputs.legenda }}"
